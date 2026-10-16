@@ -72,20 +72,27 @@ function handleCellClick(event) {
   }
 
   // TODO 1: Update the internal state (the 'board' array) with the current player
-  
+  board[cellIndex] = currentPlayer;
   // TODO 2: Update the DOM to reflect the internal state! 
   // you may need to update both inner html and css classes of DOM elements
+  clickedCell.textContent = currentPlayer;
+  clickedCell.classList.add('taken', currentPlayer.toLowerCase());
 
   // TODO 3: Check for (and possibly handle) a winner (Call the checkWin() function)
+
   
   // TODO 4: Check for (and possibly handle) a tie (Call the checkTie() function)
   
   // TODO 5: Swap the currentPlayer from 'X' to 'O' or 'O' to 'X'
-  
+      if (currentPlayer === 'X') {
+    currentPlayer = 'O';
+  } else {
+    currentPlayer = 'X';
+  }
   // TODO 6: Update the statusElement to show whose turn it is now
+ statusElement.textContent = `Player ${currentPlayer}'s Turn`;
 }
-
-/**
+ /**
  * Checks for a winner.
  * @returns {boolean} true if there is a winner, false otherwise
  */
