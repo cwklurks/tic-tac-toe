@@ -77,7 +77,7 @@ function handleCellClick(event) {
   clickedCell.textContent = currentPlayer;
   clickedCell.classList.add('taken', currentPlayer.toLowerCase());
   // TODO 3: Check for (and possibly handle) a winner (Call the checkWin() function)
-  if (checkWin()) {
+  if (checkWin(board, currentPlayer)) {
     statusElement.textContent = `Player ${currentPlayer} Wins!`;
     isGameActive = false;
     return;
@@ -103,7 +103,7 @@ function handleCellClick(event) {
  * Checks for a winner.
  * @returns {boolean} true if there is a winner, false otherwise
  */
-function checkWin() {
+function checkWin(b, player) {
   const winningLines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -117,9 +117,9 @@ function checkWin() {
 
   for (const line of winningLines) {
     if (
-      board[line[0]] === currentPlayer &&
-      board[line[1]] === currentPlayer &&
-      board[line[2]] === currentPlayer
+      b[line[0]] === player &&
+      b[line[1]] === player &&
+      b[line[2]] === player
     ) {
       return true;
     }
