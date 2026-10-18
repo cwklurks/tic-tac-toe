@@ -67,17 +67,29 @@ function handleCellClick(event) {
 
   // Check if the cell is already filled OR if the game is over.
   // If either is true, exit the function early (do nothing).
-  if (board[cellIndex] !== '' || isGameActive === false) {
+  if (board[cellIndex] !== '' || isGameActive === false || currentPlayer === 'O') {
     return;
   }
+  makeMove(cellIndex);
+  if (isGameActive && currentPlayer === 'O') {
+    setTimeout(() => {
+      if (isGameActive && currentPlayer === 'O') {
+        makeMove(bestMove());
+      }
+    }, 500);
+  }
+}
+
+function makeMove(index) {
+  const cell = document.querySelector(`[data-index="${index}"]`);
   // TODO 1: Update the internal state (the 'board' array) with the current player
-  board[cellIndex] = currentPlayer;
-  // TODO 2: Update the DOM to reflect the internal state! 
+  board[index] = currentPlayer;
+  // TODO 2: Update the DOM to reflect the internal state!
   // you may need to update both inner html and css classes of DOM elements
-  clickedCell.textContent = currentPlayer;
-  clickedCell.classList.add('taken', currentPlayer.toLowerCase());
+  cell.textContent = currentPlayer;
+  cell.classList.add('taken', currentPlayer.toLowerCase());
   // TODO 3: Check for (and possibly handle) a winner (Call the checkWin() function)
-  if (checkWin()) {
+  if (checkWin(board, currentPlayer)) {
     statusElement.textContent = `Player ${currentPlayer} Wins!`;
     isGameActive = false;
     return;
@@ -103,7 +115,7 @@ function handleCellClick(event) {
  * Checks for a winner.
  * @returns {boolean} true if there is a winner, false otherwise
  */
-function checkWin() {
+function checkWin(b, player) {
   const winningLines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -117,9 +129,9 @@ function checkWin() {
 
   for (const line of winningLines) {
     if (
-      board[line[0]] === currentPlayer &&
-      board[line[1]] === currentPlayer &&
-      board[line[2]] === currentPlayer
+      b[line[0]] === player &&
+      b[line[1]] === player &&
+      b[line[2]] === player
     ) {
       return true;
     }
@@ -135,6 +147,59 @@ function checkTie() {
     return false;
   }
   return true;
+}
+
+function minimax(b, isOTurn, depth) {
+  if (checkWin(b, 'O')) {
+    return 10 - depth;
+  }
+  if (checkWin(b, 'X')) {
+    return depth - 10;
+  }
+  if (!b.includes('')) {
+    return 0;
+  }
+
+  if (isOTurn) {
+    let best = -Infinity;
+    for (let i = 0; i < 9; i++) {
+      if (b[i] === '') {
+        b[i] = 'O';
+        const score = minimax(b, false, depth + 1);
+        b[i] = '';
+        best = Math.max(best, score);
+      }
+    }
+    return best;
+  } else {
+    let best = Infinity;
+    for (let i = 0; i < 9; i++) {
+      if (b[i] === '') {
+        b[i] = 'X';
+        const score = minimax(b, true, depth + 1);
+        b[i] = '';
+        best = Math.min(best, score);
+      }
+    }
+    return best;
+  }
+}
+
+function bestMove() {
+  let bestScore = -Infinity;
+  let bestIndex = -1;
+  for (let i = 0; i < 9; i++) {
+    if (board[i] === '') {
+      board[i] = 'O';
+      const score = minimax(board, false, 1);
+      board[i] = '';
+      if (score > bestScore) {
+        bestScore = score;
+        bestIndex = i;
+      }
+    }
+  }
+  return bestIndex;
 }
 
 /**
