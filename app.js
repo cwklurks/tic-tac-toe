@@ -70,12 +70,17 @@ function handleCellClick(event) {
   if (board[cellIndex] !== '' || isGameActive === false) {
     return;
   }
+  makeMove(cellIndex);
+}
+
+function makeMove(index) {
+  const cell = document.querySelector(`[data-index="${index}"]`);
   // TODO 1: Update the internal state (the 'board' array) with the current player
-  board[cellIndex] = currentPlayer;
-  // TODO 2: Update the DOM to reflect the internal state! 
+  board[index] = currentPlayer;
+  // TODO 2: Update the DOM to reflect the internal state!
   // you may need to update both inner html and css classes of DOM elements
-  clickedCell.textContent = currentPlayer;
-  clickedCell.classList.add('taken', currentPlayer.toLowerCase());
+  cell.textContent = currentPlayer;
+  cell.classList.add('taken', currentPlayer.toLowerCase());
   // TODO 3: Check for (and possibly handle) a winner (Call the checkWin() function)
   if (checkWin(board, currentPlayer)) {
     statusElement.textContent = `Player ${currentPlayer} Wins!`;
