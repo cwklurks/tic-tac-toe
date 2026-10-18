@@ -67,12 +67,16 @@ function handleCellClick(event) {
 
   // Check if the cell is already filled OR if the game is over.
   // If either is true, exit the function early (do nothing).
-  if (board[cellIndex] !== '' || isGameActive === false) {
+  if (board[cellIndex] !== '' || isGameActive === false || currentPlayer === 'O') {
     return;
   }
   makeMove(cellIndex);
   if (isGameActive && currentPlayer === 'O') {
-    makeMove(bestMove());
+    setTimeout(() => {
+      if (isGameActive && currentPlayer === 'O') {
+        makeMove(bestMove());
+      }
+    }, 500);
   }
 }
 
@@ -145,12 +149,12 @@ function checkTie() {
   return true;
 }
 
-function minimax(b, isOTurn) {
+function minimax(b, isOTurn, depth) {
   if (checkWin(b, 'O')) {
-    return 1;
+    return 10 - depth;
   }
   if (checkWin(b, 'X')) {
-    return -1;
+    return depth - 10;
   }
   if (!b.includes('')) {
     return 0;
@@ -161,7 +165,7 @@ function minimax(b, isOTurn) {
     for (let i = 0; i < 9; i++) {
       if (b[i] === '') {
         b[i] = 'O';
-        const score = minimax(b, false);
+        const score = minimax(b, false, depth + 1);
         b[i] = '';
         best = Math.max(best, score);
       }
@@ -172,7 +176,7 @@ function minimax(b, isOTurn) {
     for (let i = 0; i < 9; i++) {
       if (b[i] === '') {
         b[i] = 'X';
-        const score = minimax(b, true);
+        const score = minimax(b, true, depth + 1);
         b[i] = '';
         best = Math.min(best, score);
       }
@@ -187,7 +191,7 @@ function bestMove() {
   for (let i = 0; i < 9; i++) {
     if (board[i] === '') {
       board[i] = 'O';
-      const score = minimax(board, false);
+      const score = minimax(board, false, 1);
       board[i] = '';
       if (score > bestScore) {
         bestScore = score;
