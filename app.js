@@ -71,6 +71,9 @@ function handleCellClick(event) {
     return;
   }
   makeMove(cellIndex);
+  if (isGameActive && currentPlayer === 'O') {
+    makeMove(bestMove());
+  }
 }
 
 function makeMove(index) {
@@ -176,6 +179,23 @@ function minimax(b, isOTurn) {
     }
     return best;
   }
+}
+
+function bestMove() {
+  let bestScore = -Infinity;
+  let bestIndex = -1;
+  for (let i = 0; i < 9; i++) {
+    if (board[i] === '') {
+      board[i] = 'O';
+      const score = minimax(board, false);
+      board[i] = '';
+      if (score > bestScore) {
+        bestScore = score;
+        bestIndex = i;
+      }
+    }
+  }
+  return bestIndex;
 }
 
 /**
