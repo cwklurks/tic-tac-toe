@@ -142,6 +142,42 @@ function checkTie() {
   return true;
 }
 
+function minimax(b, isOTurn) {
+  if (checkWin(b, 'O')) {
+    return 1;
+  }
+  if (checkWin(b, 'X')) {
+    return -1;
+  }
+  if (!b.includes('')) {
+    return 0;
+  }
+
+  if (isOTurn) {
+    let best = -Infinity;
+    for (let i = 0; i < 9; i++) {
+      if (b[i] === '') {
+        b[i] = 'O';
+        const score = minimax(b, false);
+        b[i] = '';
+        best = Math.max(best, score);
+      }
+    }
+    return best;
+  } else {
+    let best = Infinity;
+    for (let i = 0; i < 9; i++) {
+      if (b[i] === '') {
+        b[i] = 'X';
+        const score = minimax(b, true);
+        b[i] = '';
+        best = Math.min(best, score);
+      }
+    }
+    return best;
+  }
+}
+
 /**
  * Resets all state variables and the DOM to start a new game.
  */
