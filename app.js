@@ -70,19 +70,26 @@ function handleCellClick(event) {
   if (board[cellIndex] !== '' || isGameActive === false) {
     return;
   }
-
   // TODO 1: Update the internal state (the 'board' array) with the current player
   board[cellIndex] = currentPlayer;
   // TODO 2: Update the DOM to reflect the internal state! 
   // you may need to update both inner html and css classes of DOM elements
   clickedCell.textContent = currentPlayer;
   clickedCell.classList.add('taken', currentPlayer.toLowerCase());
-
   // TODO 3: Check for (and possibly handle) a winner (Call the checkWin() function)
+  if (checkWin()) {
+    statusElement.textContent = `Player ${currentPlayer} Wins!`;
+    isGameActive = false;
+    return;
+  }
 
-  
   // TODO 4: Check for (and possibly handle) a tie (Call the checkTie() function)
-  
+  if (checkTie()) {
+    statusElement.textContent = "It's a tie!";
+    isGameActive = false;
+    return;
+  }
+
   // TODO 5: Swap the currentPlayer from 'X' to 'O' or 'O' to 'X'
       if (currentPlayer === 'X') {
     currentPlayer = 'O';
@@ -97,17 +104,37 @@ function handleCellClick(event) {
  * @returns {boolean} true if there is a winner, false otherwise
  */
 function checkWin() {
-  // TODO
+  const winningLines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+  ];
+
+  for (const line of winningLines) {
+    if (
+      board[line[0]] === currentPlayer &&
+      board[line[1]] === currentPlayer &&
+      board[line[2]] === currentPlayer
+    ) {
+      return true;
+    }
+  }
   return false;
 }
-
 /**
  * Checks for a tie game.
  * @returns {boolean} true if it's a tie, false otherwise
  */
 function checkTie() {
-  // TODO
-  return false; 
+  if (board.includes('')) {
+    return false;
+  }
+  return true;
 }
 
 /**
@@ -115,6 +142,10 @@ function checkTie() {
  */
 function resetGame() {
   // TODO: reset internal state
+  board = ['', '', '', '', '', '', '', '', ''];
+  currentPlayer = 'X';
+  isGameActive = true;
+  statusElement.textContent = `Player ${currentPlayer}'s Turn`;
   // To clear the DOM easily, just call initGame() again to rebuild the empty cells!
   initGame();
 }
