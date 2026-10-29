@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { checkWin, checkTie } from './game';
+import { checkWin, checkTie, bestMove } from './game';
 
 describe('checkWin', () => {
   it('finds a row, a column, and a diagonal', () => {
@@ -21,5 +21,21 @@ describe('checkTie', () => {
   it('is true only when every cell is filled', () => {
     expect(checkTie(['X', 'O', 'X', 'X', 'O', 'O', 'O', 'X', 'X'])).toBe(true);
     expect(checkTie(['X', 'O', 'X', 'X', 'O', 'O', 'O', 'X', ''])).toBe(false);
+  });
+});
+
+describe('bestMove', () => {
+  it('blocks X from winning', () => {
+    expect(bestMove(['X', 'X', '', '', 'O', '', '', '', ''])).toBe(2);
+  });
+
+  it('wins instead of blocking when it can', () => {
+    expect(bestMove(['O', 'O', '', 'X', 'X', '', 'X', '', ''])).toBe(2);
+  });
+
+  it('does not change the board it is given', () => {
+    const board = ['X', '', '', '', '', '', '', '', ''];
+    bestMove(board);
+    expect(board).toEqual(['X', '', '', '', '', '', '', '', '']);
   });
 });

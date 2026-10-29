@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Board from './components/Board';
-import { checkWin, checkTie } from './game';
+import { checkWin, checkTie, placeMark, bestMove } from './game';
 
 const emptyBoard = ['', '', '', '', '', '', '', '', ''];
 
@@ -15,14 +15,28 @@ function App() {
   const isTie = !winner && checkTie(board);
   const isGameActive = !winner && !isTie;
 
-  function handleCellClick(index) {
-    if (board[index] !== '' || !isGameActive) {
+  // The bot plays O. A timer is outside React, so it belongs in an effect
+  useEffect(() => {
+    if (!isGameActive || currentPlayer !== 'O') {
       return;
     }
-    // Make a new array instead of changing the old one, so React sees the update
-    const nextBoard = board.map((cell, i) => (i === index ? currentPlayer : cell));
-    setBoard(nextBoard);
-    setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X');
+    // Pause before moving so the bot doesn't feel instant
+    const timeoutId = setTimeout(() => {
+      setBoard(placeMark(board, bestMove(board), 'O'));
+      setCurrentPlayer('X');
+    }, 500);
+    // Cleanup: if the game restarts during the pause, cancel the bot's move
+    return () => clearTimeout(timeoutId);
+  }, [board, currentPlayer, isGameActive]);
+
+  function handleCellClick(index) {
+    // Ignore taken cells, finished games, and clicks while the bot is thinking
+    if (board[index] !== '' || !isGameActive || currentPlayer === 'O') {
+      return;
+    }
+    // placeMark makes a new array instead of changing the old one, so React sees the update
+    setBoard(placeMark(board, index, 'X'));
+    setCurrentPlayer('O');
   }
 
   function resetGame() {
