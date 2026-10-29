@@ -20,6 +20,13 @@ body {
   margin: 0;
 }
 
+/* React's #root div sits between body and .container, so it needs to fill the width */
+#root {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .container {
   width: 100%;
   max-width: 400px;
@@ -85,6 +92,9 @@ header h1 {
 
 .cell {
   background-color: #0f172a;
+  border: none;
+  color: inherit;
+  font-family: inherit;
   border-radius: 4px;
   display: flex;
   justify-content: center;
