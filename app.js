@@ -67,41 +67,28 @@ function handleCellClick(event) {
 
   // Check if the cell is already filled OR if the game is over.
   // If either is true, exit the function early (do nothing).
-  if (board[cellIndex] !== '' || isGameActive === false || currentPlayer === 'O') {
+  if (board[cellIndex] !== '' || isGameActive === false) {
     return;
   }
-  makeMove(cellIndex);
-  if (isGameActive && currentPlayer === 'O') {
-    setTimeout(() => {
-      if (isGameActive && currentPlayer === 'O') {
-        makeMove(bestMove());
-      }
-    }, 500);
-  }
-}
-
-function makeMove(index) {
-  const cell = document.querySelector(`[data-index="${index}"]`);
   // TODO 1: Update the internal state (the 'board' array) with the current player
-  board[index] = currentPlayer;
-  // TODO 2: Update the DOM to reflect the internal state!
+  board[cellIndex] = currentPlayer;
+  // TODO 2: Update the DOM to reflect the internal state! 
   // you may need to update both inner html and css classes of DOM elements
-  cell.textContent = currentPlayer;
-  cell.classList.add('taken', currentPlayer.toLowerCase());
+  clickedCell.textContent = currentPlayer;
+  clickedCell.classList.add('taken', currentPlayer.toLowerCase());
   // TODO 3: Check for (and possibly handle) a winner (Call the checkWin() function)
-  if (checkWin(board, currentPlayer)) {
-    statusElement.textContent = `Player ${currentPlayer} Wins!`;
-    isGameActive = false;
-    return;
-  }
+if (checkWin()) {
+  statusElement.textContent = `Player ${currentPlayer} Wins!`;
+  isGameActive = false;
+  return;
+}
 
   // TODO 4: Check for (and possibly handle) a tie (Call the checkTie() function)
   if (checkTie()) {
-    statusElement.textContent = "It's a tie!";
-    isGameActive = false;
-    return;
-  }
-
+  statusElement.textContent = "It's a Tie!";
+  isGameActive = false;
+  return;
+}
   // TODO 5: Swap the currentPlayer from 'X' to 'O' or 'O' to 'X'
       if (currentPlayer === 'X') {
     currentPlayer = 'O';
@@ -115,102 +102,42 @@ function makeMove(index) {
  * Checks for a winner.
  * @returns {boolean} true if there is a winner, false otherwise
  */
-function checkWin(b, player) {
-  const winningLines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6]
+function checkWin() {
+  const winLines = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8], // the rows
+    [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+    [0, 4, 8], [2, 4, 6],            // diagonals
   ];
 
-  for (const line of winningLines) {
+  for (const [a, b, c] of winLines) {
     if (
-      b[line[0]] === player &&
-      b[line[1]] === player &&
-      b[line[2]] === player
+      board[a] === currentPlayer &&
+      board[b] === currentPlayer &&
+      board[c] === currentPlayer
     ) {
       return true;
     }
   }
+
   return false;
 }
+
 /**
  * Checks for a tie game.
  * @returns {boolean} true if it's a tie, false otherwise
  */
 function checkTie() {
-  if (board.includes('')) {
-    return false;
-  }
-  return true;
-}
-
-function minimax(b, isOTurn, depth) {
-  if (checkWin(b, 'O')) {
-    return 10 - depth;
-  }
-  if (checkWin(b, 'X')) {
-    return depth - 10;
-  }
-  if (!b.includes('')) {
-    return 0;
-  }
-
-  if (isOTurn) {
-    let best = -Infinity;
-    for (let i = 0; i < 9; i++) {
-      if (b[i] === '') {
-        b[i] = 'O';
-        const score = minimax(b, false, depth + 1);
-        b[i] = '';
-        best = Math.max(best, score);
-      }
-    }
-    return best;
-  } else {
-    let best = Infinity;
-    for (let i = 0; i < 9; i++) {
-      if (b[i] === '') {
-        b[i] = 'X';
-        const score = minimax(b, true, depth + 1);
-        b[i] = '';
-        best = Math.min(best, score);
-      }
-    }
-    return best;
-  }
-}
-
-function bestMove() {
-  let bestScore = -Infinity;
-  let bestIndex = -1;
-  for (let i = 0; i < 9; i++) {
-    if (board[i] === '') {
-      board[i] = 'O';
-      const score = minimax(board, false, 1);
-      board[i] = '';
-      if (score > bestScore) {
-        bestScore = score;
-        bestIndex = i;
-      }
-    }
-  }
-  return bestIndex;
+  return !board.includes('');
 }
 
 /**
  * Resets all state variables and the DOM to start a new game.
  */
 function resetGame() {
-  // TODO: reset internal state
   board = ['', '', '', '', '', '', '', '', ''];
   currentPlayer = 'X';
   isGameActive = true;
-  statusElement.textContent = `Player ${currentPlayer}'s Turn`;
+  statusElement.textContent = "Player X's Turn";
   // To clear the DOM easily, just call initGame() again to rebuild the empty cells!
   initGame();
 }
